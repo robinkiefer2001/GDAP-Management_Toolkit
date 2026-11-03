@@ -1,0 +1,14 @@
+{
+    "requirements": [
+        {
+            "name": "Module",
+            "module": "Microsoft.Graph.Identity.Partner",
+            "description": "Required module 'Microsoft.Graph.Identity.Partner' must be installed."
+        },
+        {
+            "name": "Module",
+            "module": "Microsoft.Graph.Identity.Governance",
+            "description": "Required module 'Microsoft.Graph.Identity.Governance' must be installed."
+        }
+    ]
+}
