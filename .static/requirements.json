@@ -9,6 +9,11 @@
             "name": "Module",
             "module": "Microsoft.Graph.Identity.Governance",
             "description": "Required module 'Microsoft.Graph.Identity.Governance' must be installed."
+        },
+        {
+            "name": "Module",
+            "module": "Pode",
+            "description": "Required module 'Pode' must be installed."
         }
     ]
 }
