@@ -33,8 +33,14 @@ GDAP-Management_Toolkit
 ├── .static/
 │   └── requirements.json       # Deklaration der benötigten Module
 ├── public/                     # Web-Frontend (wird von Pode ausgeliefert)
-│   ├── index.html
-│   ├── script.js
+│   ├── index.html              # Startseite
+│   ├── customers.html          # Seite: Customers
+│   ├── relationships.html      # Seite: Relationships
+│   ├── js/
+│   │   ├── layout.js           # Gemeinsames Layout (Navbar + Footer)
+│   │   ├── common.js           # Gemeinsame Helfer + /api/data-Abruf
+│   │   ├── customers.js        # Logik der Customers-Seite
+│   │   └── relationships.js    # Logik der Relationships-Seite
 │   └── css/daisyui.css
 ├── docs/
 │   └── API.md                  # REST-API-Dokumentation
@@ -68,7 +74,7 @@ anschließend das Hauptmenü (Kunden / Beziehungen) an.
 ### Web-Modus
 
 ```powershell
-Connect-MgGraph -Scopes 'DelegatedAdminRelationship.Read.All'
+Connect-MgGraph -Scopes 'DelegatedAdminRelationship.Read.All', 'Directory.Read.All'
 .\server.ps1
 ```
 
@@ -127,6 +133,10 @@ Details, Antwortbeispiele und Datenmodelle: **[docs/API.md](docs/API.md)**
 | Problem | Ursache / Lösung |
 |---------|------------------|
 | Klassenänderung wirkt nicht | PowerShell cached Klassen pro Session – **neue Session starten**, `Import-Module -Force` reicht nicht. |
+| `Connect-MgGraph: InteractiveBrowserCredential authentication failed` | WAM-/Browser-Login scheitert gelegentlich in eingebetteten Terminals (VS Code) oder das Anmeldefenster liegt hinter anderen Fenstern. Lösung: Anmeldefenster suchen (Taskleiste) oder manuell `Connect-MgGraph -UseDeviceCode -TenantId organizations` nutzen. |
+| `AADSTS70011: … 'scope' is not valid` | Tritt beim Device-Code-Flow ohne Tenant-Kontext auf. Lösung: `Connect-MgGraph -UseDeviceCode -TenantId <GUID, Domäne oder organizations>`. |
+| `Assembly with same name is already loaded` (Microsoft.Graph.Authentication) | Gemischte Versionen der `Microsoft.Graph.*`-Module installiert. Alle Graph-Module auf dieselbe Version bringen (z.B. `Install-PSResource Microsoft.Graph.Identity.Partner`) und **neue PowerShell-Session** starten. |
+| `Install-Module: Unable to resolve package source` | PowerShell Gallery sporadisch nicht erreichbar (Proxy/Firewall/Endpunkt-Flattern). Erneut versuchen oder `Install-PSResource <Modul>` nutzen. |
 | `/api/data` liefert 500 | Keine aktive Graph-Verbindung im Serverprozess – `Connect-MgGraph` vor `.\server.ps1` in derselben Session ausführen. |
 | Web-UI ohne Styling | Das Tailwind-Browser-CDN (`cdn.jsdelivr.net`) ist nicht erreichbar (Proxy/Firewall) oder die Seite wurde per `file://` statt über <http://localhost:8080> geöffnet. |
 | Port 8080 belegt | Anderen Prozess beenden oder Port in `server.ps1` (`Add-PodeEndpoint`) anpassen. |

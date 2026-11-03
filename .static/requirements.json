@@ -14,6 +14,11 @@
             "name": "Module",
             "module": "Pode",
             "description": "Required module 'Pode' must be installed."
+        },
+        {
+            "name": "Module",
+            "module": "Microsoft.Graph.authentication",
+            "description": "Required module 'Microsoft.Graph.authentication' must be installed."
         }
     ]
 }

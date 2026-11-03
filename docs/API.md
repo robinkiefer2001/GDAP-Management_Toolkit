@@ -59,7 +59,7 @@ curl http://localhost:8080/api/data
       "relationshipId": "5d16…-…",
       "relationshipCustomerId": "d4c8…",
       "relationshipName": "Global_Admin_Contoso",
-      "relationshipRoles": [ { "RoleDefinitionId": "62e90394-69f5-4237-9190-012177145e10" } ],
+      "relationshipRoles": [ { "RoleDefinitionId": "62e90394-69f5-4237-9190-012177145e10", "RoleDisplayName": "Global Administrator" } ],
       "relationshipStatus": "active",
       "relationshipAutoExtend": true,
       "relationshipStartDate": "2024-02-19T13:44:49",
@@ -100,7 +100,7 @@ im Serverprozess). Der Fehler wird zusätzlich in `logs\` protokolliert.
 | `relationshipId`             | `string`          | ID der GDAP-Beziehung                                        |
 | `relationshipCustomerId`     | `string`          | Tenant-ID des zugehörigen Kunden                             |
 | `relationshipName`           | `string`          | Anzeigename der Beziehung                                    |
-| `relationshipRoles`          | `array`           | Entra-Rollen (`RoleDefinitionId` je Rolle)                   |
+| `relationshipRoles`          | `array`           | Entra-Rollen (`RoleDefinitionId` + `RoleDisplayName` je Rolle)       |
 | `relationshipStatus`         | `string`          | Graph-Status, z.B. `active`, `created`, `terminated`         |
 | `relationshipAutoExtend`     | `bool`            | `true`, wenn eine Auto-Extend-Dauer (> 0) konfiguriert ist   |
 | `relationshipStartDate`      | `datetime\|null`  | Erstellungszeitpunkt (`createdDateTime`)                     |

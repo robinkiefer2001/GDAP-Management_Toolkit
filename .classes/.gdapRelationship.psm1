@@ -12,7 +12,7 @@ class GdapRelationship {
         $this.relationshipId = $relationshipId
         $this.relationshipCustomerId = $relationshipCustomerId
         $this.relationshipName = $relationshipName
-        $this.relationshipRoles = $relationshipRoles    
+        $this.relationshipRoles = $relationshipRoles
         $this.relationshipStatus = $relationshipStatus
         $this.relationshipAutoExtend = $relationshipAutoExtend
         $this.relationshipStartDate = $relationshipStartDate

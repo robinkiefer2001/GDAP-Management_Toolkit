@@ -8,6 +8,11 @@ if (-not (Get-Command Write-Log -ErrorAction SilentlyContinue)) {
     Import-Module (Join-Path $PSScriptRoot 'write-log.psm1') -DisableNameChecking
 }
 
+# Rollen-Mapping laden, sofern nicht bereits vorhanden (z.B. im Pode-Runspace)
+if (-not (Get-Command Get-RoleMapping -ErrorAction SilentlyContinue)) {
+    Import-Module (Join-Path $PSScriptRoot 'get-rollemapping.psm1') -DisableNameChecking
+}
+
 function fetch-data {
     <#
     .SYNOPSIS
@@ -42,6 +47,8 @@ function fetch-data {
     $gdapRelationships = @()
     foreach ($relationship in $allRelationships) {
 
+
+
         Write-Log -Level Debug -Component 'FetchData' -Message "Verarbeite Relationship '$($relationship.DisplayName)' ($($relationship.Id))"
 
         $relationshipId             = $relationship.Id
@@ -64,6 +71,8 @@ function fetch-data {
             $relationshipExpirationDate
         )
     }
+    # Rollen-GUIDs um Entra-Anzeigenamen anreichern
+    $gdapRelationships = @(Get-RoleMapping -Relationships $gdapRelationships)
 
     $gdapCustomers = @()
     foreach ($customer in $allCustomers) {

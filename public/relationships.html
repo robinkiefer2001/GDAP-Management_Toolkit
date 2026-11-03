@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Relationships – GDAP Management Toolkit</title>
+
+    <link rel="stylesheet" href="/css/daisyui.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="min-h-screen bg-base-200">
+
+    <main class="mx-auto w-full max-w-7xl p-4">
+
+        <div id="loading" class="flex justify-center py-16">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
+
+        <div id="error" class="alert alert-error hidden" role="alert">
+            <span id="error-text"></span>
+        </div>
+
+        <section id="content" class="hidden">
+
+            <div class="mb-4">
+                <h1 class="text-2xl font-bold">Relationships</h1>
+                <p class="mt-1 text-sm opacity-60">
+                    GDAP-Relationships durchsuchen, filtern und überprüfen.
+                </p>
+            </div>
+
+            <div class="mb-4 rounded-box border border-base-300 bg-base-100 p-4">
+
+                <label class="input w-full">
+                    <svg
+                        class="h-4 w-4 shrink-0 opacity-50"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"
+                        />
+                    </svg>
+
+                    <input
+                        id="search-relationships"
+                        type="search"
+                        class="grow"
+                        placeholder="Name, Kunde, Tenant-ID, Status oder Rolle suchen …"
+                        aria-label="Relationships durchsuchen"
+                        autocomplete="off"
+                    >
+                </label>
+
+                <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+
+                    <div class="min-w-0">
+                        <label
+                            for="filter-relationship-status"
+                            class="mb-1 block text-xs opacity-60"
+                        >
+                            Status
+                        </label>
+
+                        <select
+                            id="filter-relationship-status"
+                            class="select w-full"
+                        >
+                            <option value="">Alle Status</option>
+                        </select>
+                    </div>
+
+                    <div class="min-w-0">
+                        <label
+                            for="filter-relationship-customer"
+                            class="mb-1 block text-xs opacity-60"
+                        >
+                            Kunde
+                        </label>
+
+                        <select
+                            id="filter-relationship-customer"
+                            class="select w-full"
+                        >
+                            <option value="">Alle Kunden</option>
+                        </select>
+                    </div>
+
+                    <div class="min-w-0">
+                        <label
+                            for="filter-relationship-autoextend"
+                            class="mb-1 block text-xs opacity-60"
+                        >
+                            Auto-Extend
+                        </label>
+
+                        <select
+                            id="filter-relationship-autoextend"
+                            class="select w-full"
+                        >
+                            <option value="">Alle</option>
+                            <option value="enabled">Aktiviert</option>
+                            <option value="disabled">Deaktiviert</option>
+                        </select>
+                    </div>
+
+                    <div class="min-w-0">
+                        <label
+                            for="filter-relationship-expiry"
+                            class="mb-1 block text-xs opacity-60"
+                        >
+                            Ablaufdatum
+                        </label>
+
+                        <select
+                            id="filter-relationship-expiry"
+                            class="select w-full"
+                        >
+                            <option value="">Alle Ablaufdaten</option>
+                            <option value="expired">Bereits abgelaufen</option>
+                            <option value="7">In den nächsten 7 Tagen</option>
+                            <option value="30">In den nächsten 30 Tagen</option>
+                            <option value="90">In den nächsten 90 Tagen</option>
+                            <option value="future">Noch nicht abgelaufen</option>
+                            <option value="unknown">Ohne gültiges Ablaufdatum</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="mt-4 flex flex-wrap items-end gap-3">
+
+                    <div class="min-w-0 flex-1 sm:flex-none sm:min-w-56">
+                        <label
+                            for="sort-relationships"
+                            class="mb-1 block text-xs opacity-60"
+                        >
+                            Sortierung
+                        </label>
+
+                        <select id="sort-relationships" class="select w-full">
+                            <option value="name-asc">Name: A–Z</option>
+                            <option value="name-desc">Name: Z–A</option>
+                            <option value="customer-asc">Kunde: A–Z</option>
+                            <option value="expiry-asc">Ablauf: frühestes zuerst</option>
+                            <option value="expiry-desc">Ablauf: spätestes zuerst</option>
+                            <option value="roles-desc">Rollen: meiste zuerst</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="relationships-page-size"
+                            class="mb-1 block text-xs opacity-60"
+                        >
+                            Pro Seite
+                        </label>
+
+                        <select id="relationships-page-size" class="select">
+                            <option value="10">10</option>
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+
+                    <button
+                        id="relationships-reset"
+                        type="button"
+                        class="btn btn-ghost sm:ml-auto"
+                    >
+                        Zurücksetzen
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+                <span
+                    id="relationships-count"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                ></span>
+
+                <span id="relationships-range" class="opacity-60"></span>
+            </div>
+
+            <div id="list-relationships" class="space-y-2"></div>
+
+            <nav
+                class="mt-4 flex flex-wrap items-center justify-between gap-3"
+                aria-label="Relationships-Seitennavigation"
+            >
+                <span
+                    id="relationships-page"
+                    class="text-sm opacity-60"
+                ></span>
+
+                <div class="join">
+                    <button
+                        id="relationships-prev"
+                        type="button"
+                        class="btn btn-sm join-item"
+                        aria-controls="list-relationships"
+                        disabled
+                    >
+                        Zurück
+                    </button>
+
+                    <button
+                        id="relationships-next"
+                        type="button"
+                        class="btn btn-sm join-item"
+                        aria-controls="list-relationships"
+                        disabled
+                    >
+                        Weiter
+                    </button>
+                </div>
+            </nav>
+
+        </section>
+
+    </main>
+
+    <script src="/js/layout.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/relationships.js"></script>
+</body>
+</html>

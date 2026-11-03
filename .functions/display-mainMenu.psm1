@@ -22,6 +22,7 @@ function display-MainMenu {
     Write-Host '1. Use GDAP Management Toolkit | Console Mode'
     Write-Host '2. Get GDAP Customers'
     Write-Host '3. Get GDAP Relationships'
+    Write-Host '4. Web Mode'
 
     $selection = Read-Host -Prompt 'Please select an option from the menu'
     Write-Log -Level Verbose -Component 'Menu' -Message "Benutzerauswahl: '$selection'"
@@ -30,6 +31,7 @@ function display-MainMenu {
         '1' { Write-Host 'You selected: Use GDAP Management Toolkit | Console Mode' -ForegroundColor Green }
         '2' { Write-Host 'You selected: Get GDAP Customers' -ForegroundColor Green }
         '3' { Write-Host 'You selected: Get GDAP Relationships' -ForegroundColor Green }
+        '4' { Write-Host 'You selected: Web Mode' -ForegroundColor Green }
         default {
             Write-Log -Level Warning -Component 'Menu' -Message "Ungültige Auswahl: '$selection'"
         }

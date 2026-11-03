@@ -56,7 +56,10 @@ try {
     Test-Requirement -requirements $requirementsJson
 
     Write-Log -Component 'Main' -Message 'Verbinde mit Microsoft Graph …'
-    Connect-MgGraph -Scopes 'User.Read.All', 'Directory.Read.All', 'Identity.Governance.Read.All', 'DelegatedAdminRelationship.Read.All' -ErrorAction Stop | Out-Null
+    # Browser-Login statt WAM erzwingen – zuverlässiger in eingebetteten Terminals (z.B. VS Code)
+    # (Graph SDK < 2.40: -EnableLoginByWAM $false)
+    Set-MgGraphOption -DisableLoginByWAM $true
+    Connect-graph -Scopes 'User.Read.All', 'Directory.Read.All', 'DelegatedAdminRelationship.Read.All' -ErrorAction Stop | Out-Null
     Write-Log -Component 'Main' -Message 'Microsoft-Graph-Verbindung hergestellt.'
 
     $data = fetch-data
@@ -68,6 +71,7 @@ try {
         '1' { Write-Log -Component 'Main' -Message 'Konsolenmodus ist noch nicht implementiert.' }
         '2' { $data.Customers }
         '3' { $data.Relationships }
+        '4' { write-Log -Component 'Main' -Message 'Starte Web Mode'; .\server.ps1 }
     }
 
     Write-Log -Component 'Main' -Message 'GDAP Management Toolkit beendet.'
