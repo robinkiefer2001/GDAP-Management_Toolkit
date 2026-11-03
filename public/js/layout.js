@@ -4,6 +4,7 @@
 const NAV_ITEMS = [
     { href: 'customers.html', label: 'Customers' },
     { href: 'relationships.html', label: 'Relationships' },
+    { href: 'build.html', label: 'Build' },
 ];
 
 function renderLayout() {
