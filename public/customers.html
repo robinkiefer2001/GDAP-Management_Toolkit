@@ -29,7 +29,7 @@
         </div>
 
         <div id="error" class="alert alert-error hidden" role="alert">
-            <span id="error-text"></span>
+            <span id="errorText"></span>
         </div>
 
         <section id="content" class="hidden">
@@ -40,14 +40,14 @@
                 <label class="input w-full">
                     <span class="text-sm opacity-60">Kunde</span>
 
-                    <input id="search-customers" type="search" class="grow" placeholder="Name oder Tenant-ID …"
+                    <input id="searchCustomers" type="search" class="grow" placeholder="Name oder Tenant-ID …"
                         aria-label="Kunde nach Name oder Tenant-ID suchen">
                 </label>
 
                 <label class="input w-full">
                     <span class="text-sm opacity-60">Beziehung</span>
 
-                    <input id="search-relationships" type="search" class="grow" placeholder="Name oder Beziehungs-ID …"
+                    <input id="searchRelationships" type="search" class="grow" placeholder="Name oder Beziehungs-ID …"
                         aria-label="Beziehung nach Name oder ID suchen">
                 </label>
 
@@ -56,7 +56,7 @@
             <!-- Filter -->
             <div class="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 
-                <select id="filter-status" class="select w-full" aria-label="Beziehungsstatus">
+                <select id="filterStatus" class="select w-full" aria-label="Beziehungsstatus">
                     <option value="">Alle Status</option>
                     <option value="active">Active</option>
                     <option value="expired">Expired</option>
@@ -68,19 +68,19 @@
                     <option value="terminating">Terminating</option>
                 </select>
 
-                <select id="filter-auto-extend" class="select w-full" aria-label="Auto-Extend">
+                <select id="filterAutoExtend" class="select w-full" aria-label="Auto-Extend">
                     <option value="">Auto-Extend: alle</option>
                     <option value="enabled">Auto-Extend: aktiviert</option>
                     <option value="disabled">Auto-Extend: deaktiviert</option>
                 </select>
 
-                <select id="filter-presence" class="select w-full" aria-label="Vorhandene Beziehungen">
+                <select id="filterPresence" class="select w-full" aria-label="Vorhandene Beziehungen">
                     <option value="">Alle Kunden</option>
                     <option value="with">Mit Beziehungen</option>
                     <option value="without">Ohne Beziehungen</option>
                 </select>
 
-                <select id="sort-customers" class="select w-full" aria-label="Sortierung">
+                <select id="sortCustomers" class="select w-full" aria-label="Sortierung">
                     <option value="name-asc">Kundenname A–Z</option>
                     <option value="name-desc">Kundenname Z–A</option>
                     <option value="relationships-desc">
@@ -92,15 +92,15 @@
 
             <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
 
-                <span id="customer-results" class="text-sm opacity-60" role="status" aria-live="polite"></span>
+                <span id="customerResults" class="text-sm opacity-60" role="status" aria-live="polite"></span>
 
-                <button id="reset-customer-filters" type="button" class="btn btn-ghost btn-sm">
+                <button id="resetCustomerFilters" type="button" class="btn btn-ghost btn-sm">
                     Filter zurücksetzen
                 </button>
 
             </div>
 
-            <div id="list-customers" class="space-y-2"></div>
+            <div id="listCustomers" class="space-y-2"></div>
 
         </section>
 

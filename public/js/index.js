@@ -17,13 +17,13 @@ function countTerminatedRelationships() {
 }
 
 function renderIndex() {
-    $('count-relationshipsActive').textContent =
+    getElement('countRelationshipsActive').textContent =
         countActiveRelationships();
 
-    $('count-relationshipsExpired').textContent =
+    getElement('countRelationshipsExpired').textContent =
         countExpiredRelationships();
 
-    $('count-relationshipsTerminated').textContent =
+    getElement('countRelationshipsTerminated').textContent =
         countTerminatedRelationships();
 }
 

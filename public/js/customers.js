@@ -9,12 +9,12 @@ function normalizeText(value) {
 // Aktuelle Eingaben aus den HTML-Elementen lesen.
 function readCustomerFilters() {
     return {
-        customerSearch: normalizeText($('search-customers').value),
-        relationshipSearch: normalizeText($('search-relationships').value),
-        status: $('filter-status').value,
-        autoExtend: $('filter-auto-extend').value,
-        relationshipPresence: $('filter-presence').value,
-        sort: $('sort-customers').value
+        customerSearch: normalizeText(getElement('searchCustomers').value),
+        relationshipSearch: normalizeText(getElement('searchRelationships').value),
+        status: getElement('filterStatus').value,
+        autoExtend: getElement('filterAutoExtend').value,
+        relationshipPresence: getElement('filterPresence').value,
+        sort: getElement('sortCustomers').value
     };
 }
 
@@ -249,12 +249,12 @@ function renderCustomers() {
         0
     );
 
-    $('customer-results').textContent =
+    getElement('customerResults').textContent =
         `${results.length} von ${totalCustomers} Kunden · ` +
         `${relationshipCount} passende Beziehungen`;
 
     if (results.length === 0) {
-        $('list-customers').innerHTML = results.map((result) => {
+        getElement('listCustomers').innerHTML = results.map((result) => {
             const customer = result.customer;
             const allCount = result.allRelationships.length;
             const matchingCount = result.matchingRelationships.length;
@@ -296,7 +296,7 @@ function renderCustomers() {
         }).join('');
     }
 
-    $('list-customers').innerHTML = results.map((result) => {
+    getElement('listCustomers').innerHTML = results.map((result) => {
         const customer = result.customer;
         const allCount = result.allRelationships.length;
         const matchingCount = result.matchingRelationships.length;
@@ -345,12 +345,12 @@ function renderCustomers() {
 
 
 function resetCustomerFilters() {
-    $('search-customers').value = '';
-    $('search-relationships').value = '';
-    $('filter-status').value = '';
-    $('filter-auto-extend').value = '';
-    $('filter-presence').value = '';
-    $('sort-customers').value = 'name-asc';
+    getElement('searchCustomers').value = '';
+    getElement('searchRelationships').value = '';
+    getElement('filterStatus').value = '';
+    getElement('filterAutoExtend').value = '';
+    getElement('filterPresence').value = '';
+    getElement('sortCustomers').value = 'name-asc';
 
     renderCustomers();
 }
@@ -369,21 +369,21 @@ function scheduleCustomerRender() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    $('search-customers').addEventListener('input', scheduleCustomerRender);
-    $('search-relationships').addEventListener('input', scheduleCustomerRender);
+    getElement('searchCustomers').addEventListener('input', scheduleCustomerRender);
+    getElement('searchRelationships').addEventListener('input', scheduleCustomerRender);
 
     const selectIds = [
-        'filter-status',
-        'filter-auto-extend',
-        'filter-presence',
-        'sort-customers'
+        'filterStatus',
+        'filterAutoExtend',
+        'filterPresence',
+        'sortCustomers'
     ];
 
     for (const id of selectIds) {
-        $(id).addEventListener('change', renderCustomers);
+        getElement(id).addEventListener('change', renderCustomers);
     }
 
-    $('reset-customer-filters').addEventListener(
+    getElement('resetCustomerFilters').addEventListener(
         'click',
         resetCustomerFilters
     );

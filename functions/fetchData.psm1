@@ -1,55 +1,52 @@
-using module "..\.classes\.customer.psm1"
-using module "..\.classes\.gdapRelationship.psm1"
+using module "..\classes\gdapCustomer.psm1"
+using module "..\classes\gdapRelationship.psm1"
 
 ##  Datenabruf für das GDAP Management Toolkit
 
-# Zentrales Logging laden, sofern nicht bereits vorhanden (z.B. durch gdap-toolkit.ps1)
-if (-not (Get-Command Write-Log -ErrorAction SilentlyContinue)) {
-    Import-Module (Join-Path $PSScriptRoot 'write-log.psm1') -DisableNameChecking
+# Zentrales Logging laden, sofern nicht bereits vorhanden (z.B. durch gdapToolkit.ps1)
+if (-not (Get-Command writeLog -ErrorAction SilentlyContinue)) {
+    Import-Module (Join-Path $PSScriptRoot 'writeLog.psm1') -DisableNameChecking
 }
 
 # Rollen-Mapping laden, sofern nicht bereits vorhanden (z.B. im Pode-Runspace)
-if (-not (Get-Command Get-RoleMapping -ErrorAction SilentlyContinue)) {
-    Import-Module (Join-Path $PSScriptRoot 'get-rollemapping.psm1') -DisableNameChecking
+if (-not (Get-Command getRoleMapping -ErrorAction SilentlyContinue)) {
+    Import-Module (Join-Path $PSScriptRoot 'getRoleMapping.psm1') -DisableNameChecking
 }
 
-function fetch-data {
+function fetchData {
     <#
     .SYNOPSIS
         Ruft GDAP-Kunden und -Beziehungen aus Microsoft Graph ab.
     .DESCRIPTION
         Lädt alle Delegated-Admin-Kunden und -Beziehungen des Partner-Tenants,
-        mappt sie auf die Klassen gdapCustomer und GdapRelationship und gibt
+        mappt sie auf die Klassen gdapCustomer und gdapRelationship und gibt
         beides als Hashtable zurück. Benötigt eine aktive Graph-Verbindung
         (Connect-MgGraph) mit dem Scope 'DelegatedAdminRelationship.Read.All'.
     .OUTPUTS
-        hashtable mit den Schlüsseln 'Customers' und 'Relationships'.
+        hashtable mit den Schlüsseln 'customers' und 'relationships'.
     .EXAMPLE
-        $data = fetch-data
-        $data.Customers | Format-Table customerName, customerTenantId
+        $data = fetchData
+        $data.customers | Format-Table customerName, customerTenantId
     #>
     [CmdletBinding()]
     param ()
 
-    Write-Log -Level Verbose -Component 'FetchData' -Message 'Rufe GDAP-Daten aus Microsoft Graph ab …'
+    writeLog -component 'fetchData' -message 'Rufe GDAP-Daten aus Microsoft Graph ab …'
 
     try {
-        $allCustomers     = Get-MgTenantRelationshipDelegatedAdminCustomer -ErrorAction Stop
-        $allRelationships = Get-MgTenantRelationshipDelegatedAdminRelationship -ErrorAction Stop
+        $allCustomers     = Get-MgTenantRelationshipDelegatedAdminCustomer -All -ErrorAction Stop
+        $allRelationships = Get-MgTenantRelationshipDelegatedAdminRelationship -All -ErrorAction Stop
     }
     catch {
-        Write-Log -Level Error -Component 'FetchData' -Message "Graph-Abruf fehlgeschlagen: $($_.Exception.Message)"
+        writeLog -level Error -component 'fetchData' -message "Graph-Abruf fehlgeschlagen: $($_.Exception.Message)"
         throw
     }
 
-    Write-Log -Level Verbose -Component 'FetchData' -Message "Graph lieferte $(@($allCustomers).Count) Kunden und $(@($allRelationships).Count) Beziehungen."
+    writeLog -level Verbose -component 'fetchData' -message "Graph lieferte $(@($allCustomers).Count) Kunden und $(@($allRelationships).Count) Beziehungen."
 
     $gdapRelationships = @()
     foreach ($relationship in $allRelationships) {
-
-
-
-        Write-Log -Level Debug -Component 'FetchData' -Message "Verarbeite Relationship '$($relationship.DisplayName)' ($($relationship.Id))"
+        writeLog -level Debug -component 'fetchData' -message "Verarbeite Relationship $($relationship.Id)"
 
         $relationshipId             = $relationship.Id
         $relationshipCustomerId     = $relationship.Customer.TenantId
@@ -60,7 +57,7 @@ function fetch-data {
         $relationshipStartDate      = $relationship.CreatedDateTime
         $relationshipExpirationDate = $relationship.EndDateTime
 
-        $gdapRelationships += [GdapRelationship]::new(
+        $gdapRelationships += [gdapRelationship]::new(
             $relationshipId,
             $relationshipCustomerId,
             $relationshipName,
@@ -72,12 +69,12 @@ function fetch-data {
         )
     }
     # Rollen-GUIDs um Entra-Anzeigenamen anreichern
-    $gdapRelationships = @(Get-RoleMapping -Relationships $gdapRelationships)
+    $gdapRelationships = @(getRoleMapping -relationships $gdapRelationships)
 
     $gdapCustomers = @()
     foreach ($customer in $allCustomers) {
 
-        Write-Log -Level Debug -Component 'FetchData' -Message "Verarbeite Kunde '$($customer.DisplayName)' ($($customer.TenantId))"
+        writeLog -level Debug -component 'fetchData' -message "Verarbeite Kunden-Tenant $($customer.TenantId)"
 
         $customerName              = $customer.DisplayName
         $customerId                = $customer.Id
@@ -92,12 +89,12 @@ function fetch-data {
         )
     }
 
-    Write-Log -Level Verbose -Component 'FetchData' -Message "Mapping abgeschlossen: $($gdapCustomers.Count) Kunden, $($gdapRelationships.Count) Beziehungen."
+    writeLog -component 'fetchData' -message "Mapping abgeschlossen: $($gdapCustomers.Count) Kunden, $($gdapRelationships.Count) Beziehungen."
 
     return @{
-        Customers     = $gdapCustomers
-        Relationships = $gdapRelationships
+        customers     = $gdapCustomers
+        relationships = $gdapRelationships
     }
 }
 
-Export-ModuleMember -Function fetch-data
+Export-ModuleMember -Function fetchData

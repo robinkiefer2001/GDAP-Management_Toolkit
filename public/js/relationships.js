@@ -3,9 +3,9 @@
 (() => {
     'use strict';
 
-    const DEFAULT_PAGE_SIZE = 25;
-    const SEARCH_DELAY = 180;
-    const DAY_MS = 86_400_000;
+    const defaultPageSize = 25;
+    const searchDelay = 180;
+    const dayMs = 86_400_000;
 
     const collator = new Intl.Collator('de-CH', {
         sensitivity: 'base',
@@ -21,7 +21,7 @@
         expiry: '',
         sort: 'name-asc',
         page: 1,
-        pageSize: DEFAULT_PAGE_SIZE
+        pageSize: defaultPageSize
     };
 
     let searchTimer;
@@ -58,6 +58,7 @@
         if (!role || typeof role !== 'object') return '';
 
         return [
+            role.roleDisplayName,
             role.displayName,
             role.roleName,
             role.name,
@@ -117,11 +118,13 @@
     }
 
     function populateFilters() {
+        const previousStatus = getElement('filterRelationshipStatus').value;
+        const previousCustomer = getElement('filterRelationshipCustomer').value;
         const statuses = [...new Set(
             state.rows.map((row) => row.status).filter(Boolean)
         )].sort(collator.compare);
 
-        $('filter-relationship-status').innerHTML = [
+        getElement('filterRelationshipStatus').innerHTML = [
             '<option value="">Alle Status</option>',
             ...statuses.map((status) => `
                 <option value="${escapeHtml(status)}">
@@ -138,7 +141,7 @@
             }
         }
 
-        $('filter-relationship-customer').innerHTML = [
+        getElement('filterRelationshipCustomer').innerHTML = [
             '<option value="">Alle Kunden</option>',
             ...[...customers.entries()]
                 .sort((a, b) => collator.compare(a[1], b[1]))
@@ -148,6 +151,8 @@
                     </option>
                 `)
         ].join('');
+        getElement('filterRelationshipStatus').value = statuses.includes(previousStatus) ? previousStatus : '';
+        getElement('filterRelationshipCustomer').value = customers.has(previousCustomer) ? previousCustomer : '';
     }
 
     function matchesExpiry(row, now) {
@@ -170,7 +175,7 @@
         const days = Number(state.expiry);
 
         return row.expiresAt > now
-            && row.expiresAt <= now + days * DAY_MS;
+            && row.expiresAt <= now + days * dayMs;
     }
 
     function compareRows(a, b) {
@@ -323,7 +328,7 @@
         const start = (state.page - 1) * state.pageSize;
         const visible = filtered.slice(start, start + state.pageSize);
 
-        $('list-relationships').innerHTML = visible.length
+        getElement('listRelationships').innerHTML = visible.length
             ? visible.map(renderRow).join('')
             : `
                 <div class="alert" role="status">
@@ -336,28 +341,28 @@
                 </div>
             `;
 
-        $('relationships-count').textContent =
+        getElement('relationshipsCount').textContent =
             `${total} von ${state.rows.length} Relationships`;
 
-        $('relationships-range').textContent = total
+        getElement('relationshipsRange').textContent = total
             ? `${start + 1}–${Math.min(start + state.pageSize, total)} von ${total}`
             : '0 Treffer';
 
-        $('relationships-page').textContent =
+        getElement('relationshipsPage').textContent =
             `Seite ${state.page} von ${pages}`;
 
-        $('relationships-prev').disabled = state.page <= 1;
-        $('relationships-next').disabled = state.page >= pages;
+        getElement('relationshipsPrev').disabled = state.page <= 1;
+        getElement('relationshipsNext').disabled = state.page >= pages;
     }
 
     function readControls() {
-        state.search = $('search-relationships').value;
-        state.status = $('filter-relationship-status').value;
-        state.customer = $('filter-relationship-customer').value;
-        state.autoExtend = $('filter-relationship-autoextend').value;
-        state.expiry = $('filter-relationship-expiry').value;
-        state.sort = $('sort-relationships').value;
-        state.pageSize = Number($('relationships-page-size').value);
+        state.search = getElement('searchRelationships').value;
+        state.status = getElement('filterRelationshipStatus').value;
+        state.customer = getElement('filterRelationshipCustomer').value;
+        state.autoExtend = getElement('filterRelationshipAutoextend').value;
+        state.expiry = getElement('filterRelationshipExpiry').value;
+        state.sort = getElement('sortRelationships').value;
+        state.pageSize = Number(getElement('relationshipsPageSize').value);
     }
 
     function applyControls() {
@@ -368,42 +373,42 @@
     }
 
     function resetControls() {
-        $('search-relationships').value = '';
-        $('filter-relationship-status').value = '';
-        $('filter-relationship-customer').value = '';
-        $('filter-relationship-autoextend').value = '';
-        $('filter-relationship-expiry').value = '';
-        $('sort-relationships').value = 'name-asc';
-        $('relationships-page-size').value = String(DEFAULT_PAGE_SIZE);
+        getElement('searchRelationships').value = '';
+        getElement('filterRelationshipStatus').value = '';
+        getElement('filterRelationshipCustomer').value = '';
+        getElement('filterRelationshipAutoextend').value = '';
+        getElement('filterRelationshipExpiry').value = '';
+        getElement('sortRelationships').value = 'name-asc';
+        getElement('relationshipsPageSize').value = String(defaultPageSize);
 
         applyControls();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        $('search-relationships').addEventListener('input', () => {
+        getElement('searchRelationships').addEventListener('input', () => {
             clearTimeout(searchTimer);
-            searchTimer = setTimeout(applyControls, SEARCH_DELAY);
+            searchTimer = setTimeout(applyControls, searchDelay);
         });
 
         [
-            'filter-relationship-status',
-            'filter-relationship-customer',
-            'filter-relationship-autoextend',
-            'filter-relationship-expiry',
-            'sort-relationships',
-            'relationships-page-size'
+            'filterRelationshipStatus',
+            'filterRelationshipCustomer',
+            'filterRelationshipAutoextend',
+            'filterRelationshipExpiry',
+            'sortRelationships',
+            'relationshipsPageSize'
         ].forEach((id) => {
-            $(id).addEventListener('change', applyControls);
+            getElement(id).addEventListener('change', applyControls);
         });
 
-        $('relationships-reset').addEventListener('click', resetControls);
+        getElement('relationshipsReset').addEventListener('click', resetControls);
 
-        $('relationships-prev').addEventListener('click', () => {
+        getElement('relationshipsPrev').addEventListener('click', () => {
             state.page -= 1;
             renderRelationships();
         });
 
-        $('relationships-next').addEventListener('click', () => {
+        getElement('relationshipsNext').addEventListener('click', () => {
             state.page += 1;
             renderRelationships();
         });

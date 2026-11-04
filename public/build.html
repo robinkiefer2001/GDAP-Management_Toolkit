@@ -18,18 +18,18 @@
         <div class="mb-4">
             <h1 class="text-2xl font-bold">Build</h1>
             <p class="mt-1 text-sm opacity-60">
-                Neue GDAP-Beziehung erstellen und an den Kunden
-                zur Genehmigung senden.
+                Neue GDAP-Beziehung erstellen und zur Kundenfreigabe einreichen.
+                Es wird keine E-Mail versendet.
             </p>
         </div>
 
         <!-- Wird bei einem Fehler angezeigt. -->
-        <div id="build-error" class="alert alert-error mb-4 hidden" role="alert"></div>
+        <div id="buildError" class="alert alert-error mb-4 hidden" role="alert"></div>
 
         <!-- Wird nach erfolgreicher Erstellung angezeigt. -->
-        <div id="build-success" class="alert alert-success mb-4 hidden" role="status"></div>
+        <div id="buildSuccess" class="alert alert-success mb-4 hidden" role="status"></div>
 
-        <form id="relationship-form" novalidate>
+        <form id="relationshipForm" novalidate>
 
             <div class="mb-4 rounded-box border border-base-300 bg-base-100 p-4">
 
@@ -38,12 +38,12 @@
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
                     <div>
-                        <label for="display-name" class="mb-1 block text-xs opacity-60">
+                        <label for="displayName" class="mb-1 block text-xs opacity-60">
                             Name der Beziehung
                         </label>
 
                         <input
-                            id="display-name"
+                            id="displayName"
                             type="text"
                             class="input w-full"
                             placeholder="z. B. Contoso-Admin-2026"
@@ -54,12 +54,22 @@
                     </div>
 
                     <div>
-                        <label for="tenant-id" class="mb-1 block text-xs opacity-60">
-                            Customer-Tenant-ID
+                        <label for="customerSearch" class="mb-1 block text-xs opacity-60">
+                            Bekannten Kunden suchen
+                        </label>
+                        <input id="customerSearch" type="search" class="input mb-2 w-full" placeholder="Kundenname oder Tenant-ID" autocomplete="off">
+                        <label for="customerSelect" class="mb-1 block text-xs opacity-60">Kunde auswählen</label>
+                        <select id="customerSelect" class="select mb-2 w-full" disabled>
+                            <option value="">Kunden werden geladen …</option>
+                        </select>
+                        <div id="customerStatus" class="mb-2 text-xs opacity-60" role="status"></div>
+                        <button id="reloadCustomers" type="button" class="btn btn-ghost btn-sm mb-2">Kunden neu laden</button>
+                        <label for="tenantId" class="mb-1 block text-xs opacity-60">
+                            Customer-Tenant-ID (auch manuell möglich)
                         </label>
 
                         <input
-                            id="tenant-id"
+                            id="tenantId"
                             type="text"
                             class="input w-full"
                             placeholder="00000000-0000-0000-0000-000000000000"
@@ -88,11 +98,11 @@
                     </div>
 
                     <div>
-                        <label for="auto-extend" class="mb-1 block text-xs opacity-60">
+                        <label for="autoExtend" class="mb-1 block text-xs opacity-60">
                             Auto-Extend
                         </label>
 
-                        <select id="auto-extend" class="select w-full">
+                        <select id="autoExtend" class="select w-full">
                             <option value="P180D" selected>Automatisch um 180 Tage verlängern</option>
                             <option value="PT0S">Keine automatische Verlängerung</option>
                         </select>
@@ -106,7 +116,7 @@
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
                     <h2 class="font-semibold">Rollen</h2>
 
-                    <button id="reload-roles" type="button" class="btn btn-ghost btn-sm">
+                    <button id="reloadRoles" type="button" class="btn btn-ghost btn-sm">
                         Neu laden
                     </button>
                 </div>
@@ -129,7 +139,7 @@
                     </svg>
 
                     <input
-                        id="role-search"
+                        id="roleSearch"
                         type="search"
                         class="grow"
                         placeholder="Rollen nach Name, Beschreibung oder ID durchsuchen …"
@@ -138,18 +148,24 @@
                     >
                 </label>
 
-                <div
-                    id="role-list"
-                    class="grid max-h-96 grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2"
-                    aria-live="polite"
-                >
-                    Rollen werden geladen …
+                <p id="roleHelp" class="mb-3 text-sm opacity-60">Rollen zwischen den Listen ziehen oder mit den Buttons hinzufügen und entfernen.</p>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <section class="rounded-box border border-base-300 p-3">
+                        <h3 class="mb-2 font-medium">Verfügbare Rollen</h3>
+                        <div id="roleList" class="grid min-h-32 max-h-96 gap-2 overflow-y-auto" role="list" aria-label="Verfügbare Rollen" aria-describedby="roleHelp">
+                            Rollen werden geladen …
+                        </div>
+                    </section>
+                    <section class="rounded-box border border-base-300 p-3">
+                        <h3 class="mb-2 font-medium">Ausgewählte Rollen</h3>
+                        <div id="selectedRoleList" class="grid min-h-32 max-h-96 gap-2 overflow-y-auto" role="list" aria-label="Ausgewählte Rollen" aria-describedby="roleHelp"></div>
+                    </section>
                 </div>
 
                 <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
-                    <span id="role-count" class="text-sm opacity-60"></span>
+                    <span id="roleCount" class="text-sm opacity-60" role="status"></span>
 
-                    <button id="create-button" type="submit" class="btn btn-primary" disabled>
+                    <button id="createButton" type="submit" class="btn btn-primary" disabled>
                         Create GDAP Relationship
                     </button>
                 </div>

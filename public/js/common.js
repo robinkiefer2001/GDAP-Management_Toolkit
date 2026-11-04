@@ -2,7 +2,7 @@
 
 let gdapData = null;
 
-const $ = (id) => document.getElementById(id);
+const getElement = (id) => document.getElementById(id);
 
 function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (c) => (
@@ -47,8 +47,8 @@ function statusBadge(status) {
 function roleBadges(roles) {
     if (!roles || !roles.length) return '<span class="text-sm opacity-60">keine Rollen</span>';
     return roles.map((r) => {
-        // Anzeigename kommt vom Backend (Get-RoleMapping); Fallback: GUID
-        const name = r.RoleDisplayName || r.roleDisplayName || r.RoleDefinitionId || r.roleDefinitionId || 'unbekannt';
+        // Anzeigename kommt vom Backend (getRoleMapping); Fallback: GUID
+        const name = r.roleDisplayName || r.roleDefinitionId || 'unbekannt';
         return `<span class="badge badge-outline badge-sm">${escapeHtml(name)}</span>`;
     }).join(' ');
 }
@@ -58,15 +58,15 @@ function customerNameByTenant(tenantId) {
     return c ? c.customerName : (tenantId || '—');
 }
 
-async function loadGdapData() {
+async function loadGdapData(forceRefresh = false) {
     // 1. Bereits im Speicher dieser Seite vorhanden?
-    if (gdapData !== null) {
+    if (!forceRefresh && gdapData !== null) {
         return gdapData;
     }
 
     // 2. Bereits durch eine vorherige Seite im Tab gespeichert?
     try {
-        const savedData = sessionStorage.getItem('gdapData');
+        const savedData = forceRefresh ? null : sessionStorage.getItem('gdapDataV2');
 
         if (savedData !== null) {
             gdapData = JSON.parse(savedData);
@@ -77,7 +77,7 @@ async function loadGdapData() {
     }
 
     // 3. Noch keine Daten vorhanden: beim Backend abrufen.
-    const res = await fetch('/api/data');
+    const res = await fetch('/api/data', { cache: 'no-store' });
 
     if (!res.ok) {
         const body = await res.json().catch(() => null);
@@ -92,7 +92,7 @@ async function loadGdapData() {
     // 4. Für nachfolgende Seiten im selben Tab speichern.
     try {
         sessionStorage.setItem(
-            'gdapData',
+            'gdapDataV2',
             JSON.stringify(gdapData)
         );
     } catch (error) {
@@ -105,16 +105,33 @@ async function loadGdapData() {
 // Standard-Initialisierung einer Datenseite:
 // lädt /api/data, blendet #loading aus und ruft die Render-Funktion der Seite auf.
 async function initPage(render) {
-    try {
-        await loadGdapData();
-        $('loading').classList.add('hidden');
-        $('content').classList.remove('hidden');
-        render();
-    } catch (e) {
-        $('loading').classList.add('hidden');
-        $('error-text').textContent =
-            'Daten konnten nicht geladen werden: ' + e.message +
-            ' — Wurde der Server in einer Session mit aktiver Graph-Verbindung (Connect-MgGraph) gestartet?';
-        $('error').classList.remove('hidden');
+    let loading = false;
+    const refreshButton = createPageRefresh(() => load(true));
+
+    async function load(forceRefresh = false) {
+        if (loading) return;
+        loading = true;
+        refreshButton.disabled = true;
+        refreshButton.textContent = 'Wird geladen …';
+        getElement('error').classList.add('hidden');
+        getElement('loading').classList.remove('hidden');
+        try {
+            await loadGdapData(forceRefresh);
+            render();
+            getElement('content').classList.remove('hidden');
+        } catch (e) {
+            getElement('errorText').textContent =
+                'Daten konnten nicht geladen werden: ' + e.message +
+                ' — Wurde der Server in einer Session mit aktiver Graph-Verbindung (Connect-MgGraph) gestartet?' +
+                (gdapData !== null ? ' Angezeigte Daten sind möglicherweise veraltet.' : '');
+            getElement('error').classList.remove('hidden');
+        } finally {
+            getElement('loading').classList.add('hidden');
+            refreshButton.disabled = false;
+            refreshButton.textContent = 'Refresh';
+            loading = false;
+        }
     }
+
+    await load();
 }

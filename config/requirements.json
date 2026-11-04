@@ -17,8 +17,8 @@
         },
         {
             "name": "Module",
-            "module": "Microsoft.Graph.authentication",
-            "description": "Required module 'Microsoft.Graph.authentication' must be installed."
+            "module": "Microsoft.Graph.Authentication",
+            "description": "Required module 'Microsoft.Graph.Authentication' must be installed."
         }
     ]
 }

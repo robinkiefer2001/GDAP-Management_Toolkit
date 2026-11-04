@@ -19,7 +19,7 @@
         </div>
 
         <div id="error" class="alert alert-error hidden" role="alert">
-            <span id="error-text"></span>
+            <span id="errorText"></span>
         </div>
 
         <section id="content" class="hidden">
@@ -51,7 +51,7 @@
                     </svg>
 
                     <input
-                        id="search-relationships"
+                        id="searchRelationships"
                         type="search"
                         class="grow"
                         placeholder="Name, Kunde, Tenant-ID, Status oder Rolle suchen …"
@@ -64,14 +64,14 @@
 
                     <div class="min-w-0">
                         <label
-                            for="filter-relationship-status"
+                            for="filterRelationshipStatus"
                             class="mb-1 block text-xs opacity-60"
                         >
                             Status
                         </label>
 
                         <select
-                            id="filter-relationship-status"
+                            id="filterRelationshipStatus"
                             class="select w-full"
                         >
                             <option value="">Alle Status</option>
@@ -80,14 +80,14 @@
 
                     <div class="min-w-0">
                         <label
-                            for="filter-relationship-customer"
+                            for="filterRelationshipCustomer"
                             class="mb-1 block text-xs opacity-60"
                         >
                             Kunde
                         </label>
 
                         <select
-                            id="filter-relationship-customer"
+                            id="filterRelationshipCustomer"
                             class="select w-full"
                         >
                             <option value="">Alle Kunden</option>
@@ -96,14 +96,14 @@
 
                     <div class="min-w-0">
                         <label
-                            for="filter-relationship-autoextend"
+                            for="filterRelationshipAutoextend"
                             class="mb-1 block text-xs opacity-60"
                         >
                             Auto-Extend
                         </label>
 
                         <select
-                            id="filter-relationship-autoextend"
+                            id="filterRelationshipAutoextend"
                             class="select w-full"
                         >
                             <option value="">Alle</option>
@@ -114,14 +114,14 @@
 
                     <div class="min-w-0">
                         <label
-                            for="filter-relationship-expiry"
+                            for="filterRelationshipExpiry"
                             class="mb-1 block text-xs opacity-60"
                         >
                             Ablaufdatum
                         </label>
 
                         <select
-                            id="filter-relationship-expiry"
+                            id="filterRelationshipExpiry"
                             class="select w-full"
                         >
                             <option value="">Alle Ablaufdaten</option>
@@ -140,13 +140,13 @@
 
                     <div class="min-w-0 flex-1 sm:flex-none sm:min-w-56">
                         <label
-                            for="sort-relationships"
+                            for="sortRelationships"
                             class="mb-1 block text-xs opacity-60"
                         >
                             Sortierung
                         </label>
 
-                        <select id="sort-relationships" class="select w-full">
+                        <select id="sortRelationships" class="select w-full">
                             <option value="name-asc">Name: A–Z</option>
                             <option value="name-desc">Name: Z–A</option>
                             <option value="customer-asc">Kunde: A–Z</option>
@@ -158,13 +158,13 @@
 
                     <div>
                         <label
-                            for="relationships-page-size"
+                            for="relationshipsPageSize"
                             class="mb-1 block text-xs opacity-60"
                         >
                             Pro Seite
                         </label>
 
-                        <select id="relationships-page-size" class="select">
+                        <select id="relationshipsPageSize" class="select">
                             <option value="10">10</option>
                             <option value="25" selected>25</option>
                             <option value="50">50</option>
@@ -173,7 +173,7 @@
                     </div>
 
                     <button
-                        id="relationships-reset"
+                        id="relationshipsReset"
                         type="button"
                         class="btn btn-ghost sm:ml-auto"
                     >
@@ -185,42 +185,42 @@
 
             <div class="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span
-                    id="relationships-count"
+                    id="relationshipsCount"
                     role="status"
                     aria-live="polite"
                     aria-atomic="true"
                 ></span>
 
-                <span id="relationships-range" class="opacity-60"></span>
+                <span id="relationshipsRange" class="opacity-60"></span>
             </div>
 
-            <div id="list-relationships" class="space-y-2"></div>
+            <div id="listRelationships" class="space-y-2"></div>
 
             <nav
                 class="mt-4 flex flex-wrap items-center justify-between gap-3"
                 aria-label="Relationships-Seitennavigation"
             >
                 <span
-                    id="relationships-page"
+                    id="relationshipsPage"
                     class="text-sm opacity-60"
                 ></span>
 
                 <div class="join">
                     <button
-                        id="relationships-prev"
+                        id="relationshipsPrev"
                         type="button"
                         class="btn btn-sm join-item"
-                        aria-controls="list-relationships"
+                        aria-controls="listRelationships"
                         disabled
                     >
                         Zurück
                     </button>
 
                     <button
-                        id="relationships-next"
+                        id="relationshipsNext"
                         type="button"
                         class="btn btn-sm join-item"
-                        aria-controls="list-relationships"
+                        aria-controls="listRelationships"
                         disabled
                     >
                         Weiter
