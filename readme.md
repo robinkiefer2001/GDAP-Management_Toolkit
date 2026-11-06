@@ -11,10 +11,12 @@ wahlweise im interaktiven **Konsolenmodus** oder als lokale **Weboberfläche**
 - Typisierte Datenmodelle (`gdapCustomer`, `gdapRelationship`) als PowerShell-Klassen
 - Interaktives Konsolenmenü (`gdapToolkit.ps1`)
 - Lokale Web-UI mit Kunden-/Relationship-Drilldown, Suche und Status-Badges (`server.ps1`)
-- Build-Formular mit Kundensuche und automatischer Tenant-ID, Rollenauswahl per
-  Drag-and-drop oder Buttons sowie Einreichung zur Kundenfreigabe
+- Manage-Seite mit Übersicht offener Aufgaben (Approval Pending, noch nicht
+  erstellte Anfragen) sowie Create Request: Kundensuche mit automatischer
+  Tenant-ID, Rollenauswahl per Drag-and-drop oder Buttons und Einreichung zur
+  Kundenfreigabe
 - Refresh-Button auf allen Seiten: lädt Daten neu vom Backend und umgeht den
-  Browser-Cache; Build lädt Kunden und Rollen neu, ohne Formulareingaben zu löschen
+  Browser-Cache; Manage lädt Kunden und Rollen neu, ohne Formulareingaben zu löschen
 - REST-API für eigene Integrationen (siehe [docs/api.md](docs/api.md))
 - Automatische Installation fehlender PowerShell-Module
 - Zentrales, konsistentes Logging mit Loglevel-Steuerung und Logdateien
@@ -42,14 +44,14 @@ GDAP-Management_Toolkit
 │   ├── index.html                    # Startseite
 │   ├── customers.html                # Kundenübersicht
 │   ├── relationships.html            # Beziehungsübersicht
-│   ├── build.html                    # Neue Beziehung erstellen
+│   ├── manage.html                   # Übersicht offener Aufgaben + Create Request
 │   ├── js/
 │   │   ├── layout.js                 # Layout und Refresh-Button
 │   │   ├── common.js                 # Gemeinsame Helfer und Daten-Cache
 │   │   ├── index.js                  # Kennzahlen
 │   │   ├── customers.js              # Kundenfilter und Drilldown
 │   │   ├── relationships.js          # Suche, Filter und Pagination
-│   │   └── build.js                  # Kundenauswahl und Rollen-Drag-and-drop
+│   │   └── manage.js                 # Übersicht, Kundenauswahl und Rollen-Drag-and-drop
 │   └── css/daisyui.css
 ├── docs/
 │   └── api.md                        # REST-API-Dokumentation
@@ -98,13 +100,13 @@ sie automatisch. Anschließend <http://localhost:8080> im Browser öffnen.
 > **Wichtig:** `Connect-MgGraph` muss **in derselben PowerShell-Session** vor dem
 > Serverstart ausgeführt werden – die API-Routen nutzen den Graph-Kontext des
 > Serverprozesses. Ohne Verbindung liefert `/api/data` den Status 500.
-> Zum Erstellen und Einreichen von Beziehungen benötigt Build
+> Zum Erstellen und Einreichen von Beziehungen benötigt Manage → Create Request
 > `DelegatedAdminRelationship.ReadWrite.All`; für reine Auswertungen reicht
 > `DelegatedAdminRelationship.Read.All`.
 
 Das Konsolenmenü bietet Kunden, Beziehungen und den Web-Modus. Menüpunkt 1 ist
-weiterhin ein Platzhalter. Für Build nach einem Start über das Menü eine Verbindung
-mit `DelegatedAdminRelationship.ReadWrite.All` statt nur `Read.All` herstellen.
+weiterhin ein Platzhalter. Für Create Request nach einem Start über das Menü eine
+Verbindung mit `DelegatedAdminRelationship.ReadWrite.All` statt nur `Read.All` herstellen.
 
 ## Namenskonvention und Umstellung
 

@@ -385,6 +385,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Vorbelegte Suche, z. B. aus der Manage-Übersicht (?search=…).
+        const presetSearch =
+            new URLSearchParams(location.search).get('search');
+
+        if (presetSearch) {
+            getElement('searchRelationships').value = presetSearch;
+        }
+
         getElement('searchRelationships').addEventListener('input', () => {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(applyControls, searchDelay);

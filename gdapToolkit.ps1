@@ -49,6 +49,14 @@ else {
     initializeLog -level $logLevel -logDirectory (Join-Path $scriptRoot 'logs')
 }
 
+try {
+    initialiseConfig
+}
+catch {
+    writeLog -level Error -component 'gdapToolkit' -message "Fehler bei der Initialisierung der Konfiguration: $($_.Exception.Message)"
+    throw
+}
+
 writeLog -component 'gdapToolkit' -message 'GDAP Management Toolkit gestartet.'
 
 try {

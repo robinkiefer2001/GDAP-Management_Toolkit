@@ -89,6 +89,34 @@ function fetchData {
         )
     }
 
+    $customerTenantIds = @{}
+    foreach ($customer in $gdapCustomers) {
+        $customerTenantIds[$customer.customerTenantId] = $true
+    }
+
+    foreach ($relationship in $allRelationships) {
+        $relationshipCustomer = $relationship.Customer
+        $customerTenantId = $relationshipCustomer.TenantId
+
+        if ([string]::IsNullOrWhiteSpace($customerTenantId) -or $customerTenantIds.ContainsKey($customerTenantId)) {
+            continue
+        }
+
+        writeLog -level Debug -component 'fetchData' -message "Kunde $customerTenantId fehlt in der Kundenliste; ergänze ihn aus der Relationship."
+
+        $customerName              = $relationshipCustomer.DisplayName
+        $customerId                = if ($relationshipCustomer.Id) { $relationshipCustomer.Id } else { $customerTenantId }
+        $customerGdapRelationships = @($gdapRelationships | Where-Object { $_.relationshipCustomerId -eq $customerTenantId })
+
+        $gdapCustomers += [gdapCustomer]::new(
+            $customerName,
+            $customerId,
+            $customerTenantId,
+            $customerGdapRelationships
+        )
+        $customerTenantIds[$customerTenantId] = $true
+    }
+
     writeLog -component 'fetchData' -message "Mapping abgeschlossen: $($gdapCustomers.Count) Kunden, $($gdapRelationships.Count) Beziehungen."
 
     return @{

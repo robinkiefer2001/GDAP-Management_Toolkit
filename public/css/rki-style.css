@@ -1,0 +1,201 @@
+/* Manage: Layout */
+
+.manage-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+}
+
+.manage-sidebar,
+.manage-card,
+.manage-indicators {
+    background: var(--color-base-100, #fff);
+    border: 1px solid rgb(0 0 0 / 6%);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+}
+
+.manage-sidebar {
+    padding: 0.75rem;
+}
+
+.manage-sidebar .menu a,
+.manage-sidebar .menu button {
+    min-height: 2.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Aktiver Eintrag im selben Stil wie die Navbar (menu-active). */
+.manage-sidebar [aria-current="page"] {
+    background: var(--color-neutral, #1f2937);
+    color: var(--color-neutral-content, #fff);
+    font-weight: 600;
+}
+
+.manage-sidebar button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.manage-content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Ausgeblendete Panels gewinnen gegen das Flex-Layout oben. */
+.manage-content.hidden {
+    display: none;
+}
+
+
+/* Manage: Status-Kacheln */
+
+.manage-indicators {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: hidden;
+}
+
+.manage-indicator {
+    min-width: 0;
+    padding: 1.25rem 1.5rem;
+}
+
+.manage-indicator + .manage-indicator {
+    border-left: 1px dashed rgb(0 0 0 / 8%);
+}
+
+.manage-indicator-title {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.65;
+}
+
+.manage-indicator-value {
+    margin: 0.5rem 0 0.25rem;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.manage-indicator-description {
+    margin: 0;
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+
+/* Manage: Kundenkarte */
+
+.manage-card {
+    overflow: hidden;
+}
+
+.manage-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.manage-card-header > .badge {
+    flex-shrink: 0;
+}
+
+.manage-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0 1.5rem 1.25rem;
+}
+
+.manage-search {
+    flex: 1 1 250px;
+    min-width: 0;
+}
+
+.manage-toolbar .select {
+    flex: 0 1 220px;
+    width: 100%;
+}
+
+.manage-table {
+    width: 100%;
+}
+
+.manage-table thead {
+    background: var(--color-base-200, #f7f7f8);
+}
+
+.manage-table th {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.manage-table th,
+.manage-table td {
+    padding: 1rem 1.5rem;
+}
+
+/* Zeilen mit hinterlegter Aktion sind komplett klickbar. */
+.manage-table tbody tr[data-action] {
+    cursor: pointer;
+}
+
+.manage-table tbody tr[data-action]:hover {
+    background: var(--color-base-200, #f7f7f8);
+}
+
+.manage-empty-state {
+    padding: 2.5rem 1rem;
+    text-align: center;
+}
+
+.manage-card-footer {
+    padding: 0.875rem 1.5rem;
+    border-top: 1px solid rgb(0 0 0 / 6%);
+    font-size: 0.75rem;
+    color: inherit;
+    opacity: 0.6;
+}
+
+
+/* Manage: Responsive */
+
+@media (max-width: 1023px) {
+    .manage-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .manage-sidebar .menu {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 639px) {
+    .manage-indicators {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .manage-indicator + .manage-indicator {
+        border-left: 0;
+        border-top: 1px dashed rgb(0 0 0 / 8%);
+    }
+
+    .manage-card-header {
+        align-items: flex-start;
+    }
+
+    .manage-toolbar .select {
+        flex-basis: 100%;
+    }
+}

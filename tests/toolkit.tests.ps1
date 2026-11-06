@@ -88,16 +88,27 @@ function Get-MgTenantRelationshipDelegatedAdminCustomer([switch]$all, $errorActi
 function Get-MgTenantRelationshipDelegatedAdminRelationship([switch]$all, $errorAction) {
     assert $all.IsPresent 'Relationship reads must retrieve all pages'
     if ($script:emptyData) { return }
-    [pscustomobject]@{
+    $activeRelationship = [pscustomobject]@{
         Id = 'relationship-1'
         DisplayName = 'Contoso support'
-        Customer = @{ TenantId = '11111111-1111-1111-1111-111111111111' }
+        Customer = @{ Id = 'customer-1'; DisplayName = 'Contoso'; TenantId = '11111111-1111-1111-1111-111111111111' }
         AccessDetails = @{ UnifiedRoles = @(@{ RoleDefinitionId = '729827e3-9c14-49f7-bb1b-9608f156bbb8' }) }
         Status = 'active'
         AutoExtendDuration = [TimeSpan]::FromDays(180)
         CreatedDateTime = [datetime]'2026-01-01'
         EndDateTime = $null
     }
+    $inactiveRelationship = [pscustomobject]@{
+        Id = 'relationship-2'
+        DisplayName = 'Fabrikam support'
+        Customer = @{ DisplayName = 'Fabrikam'; TenantId = '22222222-2222-2222-2222-222222222222' }
+        AccessDetails = @{ UnifiedRoles = @() }
+        Status = 'terminated'
+        AutoExtendDuration = [TimeSpan]::Zero
+        CreatedDateTime = [datetime]'2025-01-01'
+        EndDateTime = [datetime]'2025-12-31'
+    }
+    return @($activeRelationship, $inactiveRelationship)
 }
 function Get-MgRoleManagementDirectoryRoleDefinition([switch]$all, $errorAction) {
     assert $all.IsPresent 'Role mapping must retrieve all pages'
@@ -115,6 +126,9 @@ try {
     assert ($role.roleDisplayName -eq 'Helpdesk Administrator') 'Role mapping must survive the rename'
     assert (($role.PSObject.Properties.Name -join ',') -ceq 'roleDefinitionId,roleDisplayName') 'Serialized roles must use camelCase'
     assert ($data.customers[0].customerGdapRelationships.Count -eq 1) 'Customer relationships must remain linked'
+    assert ($data.customers.Count -eq 2) 'Customers with only inactive relationships must be included'
+    assert ($data.customers[1].customerTenantId -eq '22222222-2222-2222-2222-222222222222') 'Relationship-only customer tenant must be preserved'
+    assert ($data.customers[1].customerGdapRelationships[0].relationshipStatus -eq 'terminated') 'Inactive relationship must remain linked to its customer'
     assert ($null -eq $data.relationships[0].relationshipExpirationDate) 'Nullable dates must be preserved'
     assert ($data.relationships[0].relationshipAutoExtend) 'Auto-extension mapping must be preserved'
     $script:emptyData = $true

@@ -11,7 +11,8 @@ Die API wird vom Pode-Webserver ([server.ps1](../server.ps1)) bereitgestellt.
   PowerShell-SDK-Namen bleiben unverändert.
 - **Refresh:** GET-Endpunkte rufen Graph live ab. Die Weboberfläche speichert
   `/api/data` pro Tab unter `gdapDataV2`; Refresh umgeht diesen Cache und den
-  HTTP-Cache. Build aktualisiert `/api/customers` und `/api/roles` parallel.
+  HTTP-Cache. Manage aktualisiert `/api/data`, `/api/customers` und
+  `/api/roles` parallel.
 - **Logging:** Alle Endpunkte verwenden das gemeinsame Logging aus
   [writeLog.psm1](../functions/writeLog.psm1). HTTP-Methode, Pfad und Status,
   Mengen der geladenen Objekte, Erstellung, Freigabe und Fehler werden erfasst.
@@ -97,8 +98,8 @@ im Serverprozess). Der Fehler wird zusätzlich in `logs\` protokolliert.
 
 Liefert alle bekannten Delegated-Admin-Kunden (einschließlich aller Graph-Seiten),
 alphabetisch sortiert, ohne Beziehungen und Rollen-Mapping zu laden.
-Die Kundensuche in Build filtert diese Liste nach Name oder Tenant-ID.
-Die Tenant-ID kann weiterhin manuell eingegeben werden.
+Die Kundensuche unter Manage → Create Request filtert diese Liste nach Name
+oder Tenant-ID. Die Tenant-ID kann weiterhin manuell eingegeben werden.
 
 **Antwort `200 OK`**
 
@@ -125,8 +126,8 @@ Benötigt z.B. `Directory.Read.All`.
 Erstellt eine GDAP-Beziehung und reicht sie anschließend mit `lockForApproval`
 zur Kundenfreigabe ein. Benötigt `DelegatedAdminRelationship.ReadWrite.All`.
 Erst die Genehmigung des Kunden aktiviert die Beziehung; die API versendet
-keine E-Mail. Das Build-Formular erlaubt Rollenauswahl per Drag-and-drop oder
-über tastaturbedienbare Hinzufügen-/Entfernen-Buttons.
+keine E-Mail. Das Formular unter Manage → Create Request erlaubt Rollenauswahl
+per Drag-and-drop oder über tastaturbedienbare Hinzufügen-/Entfernen-Buttons.
 
 Content-Type muss `application/json` sein. Browser-Origin, falls vorhanden,
 muss `http://localhost:8080` sein.

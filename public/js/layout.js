@@ -4,7 +4,7 @@
 const navItems = [
     { href: 'customers.html', label: 'Customers' },
     { href: 'relationships.html', label: 'Relationships' },
-    { href: 'build.html', label: 'Build' },
+    { href: 'manage.html', label: 'Manage' }
 ];
 
 function createPageRefresh(onRefresh) {

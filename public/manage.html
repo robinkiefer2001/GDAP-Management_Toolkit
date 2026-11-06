@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage – GDAP Management Toolkit</title>
+
+    <link rel="stylesheet" href="/css/daisyui.css">
+    <link rel="stylesheet" href="/css/rki-style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="min-h-screen bg-base-200">
+
+    <main class="mx-auto w-full max-w-7xl p-4 lg:p-8">
+
+        <header class="mb-6">
+            <h1 class="text-2xl font-bold">Manage</h1>
+            <p class="mt-1 text-sm text-base-content/60">
+                GDAP-Anfragen erstellen und ausstehende Beziehungen im Überblick.
+            </p>
+        </header>
+
+        <div class="manage-layout">
+
+            <!-- Seitennavigation -->
+            <aside class="manage-sidebar">
+                <nav aria-label="Manage-Navigation">
+                    <ul class="menu w-full gap-1 p-0">
+                        <li>
+                            <button type="button"
+                                    data-panel="overview"
+                                    aria-current="page">
+                                Übersicht
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button"
+                                    data-panel="createRequest">
+                                Create Request
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" disabled
+                                    title="Noch nicht implementiert">
+                                Manage Relationships
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" disabled
+                                    title="Noch nicht implementiert">
+                                Templates
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" disabled
+                                    title="Noch nicht implementiert">
+                                Bulk Action
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Übersicht -->
+            <section id="overviewPanel"
+                     class="manage-content"
+                     aria-label="Relationship-Übersicht">
+
+                <!-- Wird bei einem Ladefehler angezeigt. -->
+                <div id="manageError"
+                     class="alert alert-error hidden"
+                     role="alert"></div>
+
+                <!-- Status-Kacheln -->
+                <div class="manage-indicators">
+
+                    <article class="manage-indicator">
+                        <h2 class="manage-indicator-title">
+                            Approval Pending
+                        </h2>
+
+                        <p id="pendingApprovalCount"
+                           class="manage-indicator-value text-warning">
+                            —
+                        </p>
+
+                        <p class="manage-indicator-description">
+                            Kundenfreigabe ausstehend
+                        </p>
+                    </article>
+
+                    <article class="manage-indicator">
+                        <h2 class="manage-indicator-title">
+                            Noch nicht erstellt
+                        </h2>
+
+                        <p id="notCreatedCount"
+                           class="manage-indicator-value text-info">
+                            —
+                        </p>
+
+                        <p class="manage-indicator-description">
+                            Kunden ohne erstellte Anfrage
+                        </p>
+                    </article>
+
+                    <article class="manage-indicator">
+                        <h2 class="manage-indicator-title">
+                            Betroffene Kunden
+                        </h2>
+
+                        <p id="affectedCustomerCount"
+                           class="manage-indicator-value">
+                            —
+                        </p>
+
+                        <p class="manage-indicator-description">
+                            Kunden mit offenem Handlungsbedarf
+                        </p>
+                    </article>
+
+                </div>
+
+                <!-- Kundenübersicht -->
+                <section class="manage-card"
+                         aria-labelledby="manageCustomersHeading">
+
+                    <header class="manage-card-header">
+                        <div>
+                            <h2 id="manageCustomersHeading"
+                                class="text-lg font-semibold">
+                                Kunden &amp; Relationships
+                            </h2>
+
+                            <p class="mt-1 text-sm text-base-content/60">
+                                Ausstehende Freigaben und noch nicht
+                                erstellte Anfragen.
+                            </p>
+                        </div>
+
+                        <span id="manageCustomerCount"
+                              class="badge badge-ghost">
+                            — Kunden
+                        </span>
+                    </header>
+
+                    <div class="manage-toolbar">
+                        <label class="input input-bordered manage-search">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="1.8"
+                                 class="h-4 w-4 shrink-0 opacity-50"
+                                 aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="m16 16 4 4"></path>
+                            </svg>
+
+                            <input id="manageSearch"
+                                   type="search"
+                                   placeholder="Kunde oder Relationship suchen …"
+                                   aria-label="Kunden durchsuchen"
+                                   disabled>
+                        </label>
+
+                        <select id="manageStatusFilter"
+                                class="select select-bordered"
+                                aria-label="Nach Status filtern"
+                                disabled>
+                            <option value="all">Alle offenen Status</option>
+                            <option value="approvalPending">
+                                Approval Pending
+                            </option>
+                            <option value="notCreated">
+                                Noch nicht erstellt
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="table manage-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Kunde</th>
+                                    <th scope="col">Relationship</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Nächster Schritt</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="manageCustomerRows">
+                                <tr>
+                                    <td colspan="4">
+                                        <div id="manageEmptyState"
+                                             class="manage-empty-state">
+                                            <p class="font-medium">
+                                                Noch keine Daten geladen
+                                            </p>
+
+                                            <p class="mt-1 text-sm
+                                                      text-base-content/60">
+                                                Hier erscheinen die Kunden
+                                                mit ausstehender Freigabe
+                                                oder noch nicht erstellter
+                                                Anfrage.
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <footer class="manage-card-footer">
+                        <span id="manageDataStatus" role="status">
+                            Datenanbindung noch nicht eingerichtet
+                        </span>
+                    </footer>
+
+                </section>
+
+            </section>
+
+            <!-- Create Request (ehemals Build) -->
+            <section id="createRequestPanel"
+                     class="manage-content hidden"
+                     aria-label="Create Request">
+
+                <!-- Wird bei einem Fehler angezeigt. -->
+                <div id="createError"
+                     class="alert alert-error hidden"
+                     role="alert"></div>
+
+                <!-- Wird nach erfolgreicher Erstellung angezeigt. -->
+                <div id="createSuccess"
+                     class="alert alert-success hidden"
+                     role="status"></div>
+
+                <form id="relationshipForm"
+                      class="manage-content"
+                      novalidate>
+
+                    <!-- Beziehung -->
+                    <section class="manage-card"
+                             aria-labelledby="relationshipDetailsHeading">
+
+                        <header class="manage-card-header">
+                            <div>
+                                <h2 id="relationshipDetailsHeading"
+                                    class="text-lg font-semibold">
+                                    Beziehung
+                                </h2>
+
+                                <p class="mt-1 text-sm text-base-content/60">
+                                    Neue GDAP-Beziehung erstellen und zur
+                                    Kundenfreigabe einreichen.
+                                    Es wird keine E-Mail versendet.
+                                </p>
+                            </div>
+                        </header>
+
+                        <div class="grid grid-cols-1 gap-4 px-6 pb-6 sm:grid-cols-2">
+
+                            <div>
+                                <label for="displayName"
+                                       class="mb-1 block text-xs text-base-content/60">
+                                    Name der Beziehung
+                                </label>
+
+                                <input id="displayName"
+                                       type="text"
+                                       class="input input-bordered w-full"
+                                       placeholder="z. B. Contoso-Admin-2026"
+                                       maxlength="50"
+                                       required
+                                       autocomplete="off">
+                            </div>
+
+                            <div>
+                                <label for="customerSearch"
+                                       class="mb-1 block text-xs text-base-content/60">
+                                    Bekannten Kunden suchen
+                                </label>
+
+                                <input id="customerSearch"
+                                       type="search"
+                                       class="input input-bordered mb-2 w-full"
+                                       placeholder="Kundenname oder Tenant-ID"
+                                       autocomplete="off">
+
+                                <label for="customerSelect"
+                                       class="mb-1 block text-xs text-base-content/60">
+                                    Kunde auswählen
+                                </label>
+
+                                <select id="customerSelect"
+                                        class="select select-bordered mb-2 w-full"
+                                        disabled>
+                                    <option value="">Kunden werden geladen …</option>
+                                </select>
+
+                                <div id="customerStatus"
+                                     class="mb-2 text-xs text-base-content/60"
+                                     role="status"></div>
+
+                                <button id="reloadCustomers"
+                                        type="button"
+                                        class="btn btn-outline btn-sm mb-2">
+                                    Kunden neu laden
+                                </button>
+
+                                <label for="tenantId"
+                                       class="mb-1 block text-xs text-base-content/60">
+                                    Customer-Tenant-ID (auch manuell möglich)
+                                </label>
+
+                                <input id="tenantId"
+                                       type="text"
+                                       class="input input-bordered w-full"
+                                       placeholder="00000000-0000-0000-0000-000000000000"
+                                       pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                                       title="GUID im Format 00000000-0000-0000-0000-000000000000"
+                                       required
+                                       autocomplete="off">
+                            </div>
+
+                            <div>
+                                <label for="duration"
+                                       class="mb-1 block text-xs text-base-content/60">
+                                    Laufzeit in Tagen (1–730)
+                                </label>
+
+                                <input id="duration"
+                                       type="number"
+                                       class="input input-bordered w-full"
+                                       min="1"
+                                       max="730"
+                                       step="1"
+                                       value="730"
+                                       required>
+                            </div>
+
+                            <div>
+                                <label for="autoExtend"
+                                       class="mb-1 block text-xs text-base-content/60">
+                                    Auto-Extend
+                                </label>
+
+                                <select id="autoExtend"
+                                        class="select select-bordered w-full">
+                                    <option value="P180D" selected>
+                                        Automatisch um 180 Tage verlängern
+                                    </option>
+                                    <option value="PT0S">
+                                        Keine automatische Verlängerung
+                                    </option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- Rollen -->
+                    <section class="manage-card"
+                             aria-labelledby="rolesHeading">
+
+                        <header class="manage-card-header">
+                            <div>
+                                <h2 id="rolesHeading"
+                                    class="text-lg font-semibold">
+                                    Rollen
+                                </h2>
+
+                                <p id="roleHelp"
+                                   class="mt-1 text-sm text-base-content/60">
+                                    Rollen zwischen den Listen ziehen oder mit
+                                    den Buttons hinzufügen und entfernen.
+                                </p>
+                            </div>
+
+                            <button id="reloadRoles"
+                                    type="button"
+                                    class="btn btn-outline btn-sm">
+                                Neu laden
+                            </button>
+                        </header>
+
+                        <div class="grid gap-3 px-6 pb-6">
+
+                            <label class="input input-bordered w-full">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.8"
+                                     class="h-4 w-4 shrink-0 opacity-50"
+                                     aria-hidden="true">
+                                    <circle cx="11" cy="11" r="7"></circle>
+                                    <path d="m16 16 4 4"></path>
+                                </svg>
+
+                                <input id="roleSearch"
+                                       type="search"
+                                       class="grow"
+                                       placeholder="Rollen nach Name, Beschreibung oder ID durchsuchen …"
+                                       aria-label="Rollen durchsuchen"
+                                       autocomplete="off">
+                            </label>
+
+                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                <section class="rounded-box border border-base-300 p-3">
+                                    <h3 class="mb-2 font-medium">
+                                        Verfügbare Rollen
+                                    </h3>
+
+                                    <div id="roleList"
+                                         class="grid min-h-32 max-h-96 gap-2 overflow-y-auto"
+                                         role="list"
+                                         aria-label="Verfügbare Rollen"
+                                         aria-describedby="roleHelp">
+                                        Rollen werden geladen …
+                                    </div>
+                                </section>
+
+                                <section class="rounded-box border border-base-300 p-3">
+                                    <h3 class="mb-2 font-medium">
+                                        Ausgewählte Rollen
+                                    </h3>
+
+                                    <div id="selectedRoleList"
+                                         class="grid min-h-32 max-h-96 gap-2 overflow-y-auto"
+                                         role="list"
+                                         aria-label="Ausgewählte Rollen"
+                                         aria-describedby="roleHelp"></div>
+                                </section>
+                            </div>
+
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-2
+                                    border-t border-base-300/60 px-6 py-4">
+                            <span id="roleCount"
+                                  class="text-sm text-base-content/60"
+                                  role="status"></span>
+
+                            <button id="createButton"
+                                    type="submit"
+                                    class="btn btn-neutral"
+                                    disabled>
+                                Create GDAP Relationship
+                            </button>
+                        </div>
+
+                    </section>
+
+                </form>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- Vorlage für späteres JavaScript: nicht sichtbar -->
+    <template id="manageCustomerRowTemplate">
+        <tr>
+            <td>
+                <div data-field="customerName" class="font-medium"></div>
+                <div data-field="tenantId"
+                     class="mt-1 font-mono text-xs text-base-content/50">
+                </div>
+            </td>
+
+            <td>
+                <span data-field="relationshipName"
+                      class="text-base-content/70"></span>
+            </td>
+
+            <td>
+                <span data-field="status"
+                      class="badge badge-sm whitespace-nowrap"></span>
+            </td>
+
+            <td>
+                <button type="button"
+                        data-field="nextStep"
+                        class="btn btn-outline btn-sm whitespace-nowrap">
+                </button>
+            </td>
+        </tr>
+    </template>
+
+    <script src="/js/layout.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/manage.js"></script>
+
+</body>
+</html>
